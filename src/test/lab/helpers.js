@@ -30,6 +30,10 @@ import Button from '../../routes/components/Button.svelte';
 import Text from '../../routes/components/Text.svelte';
 import List from '../../routes/components/List.svelte';
 import ListItem from '../../routes/components/ListItem.svelte';
+import Strong from '../../routes/components/Strong.svelte';
+import Emphasis from '../../routes/components/Emphasis.svelte';
+import Highlight from '../../routes/components/Highlight.svelte';
+import Link from '../../routes/components/Link.svelte';
 import SveditTest from '../testing_components/SveditTest.svelte';
 
 // ---------------------------------------------------------------------------
@@ -109,7 +113,7 @@ export const document_schema = define_document_schema({
 export const session_config = {
 	generate_id: nanoid,
 	system_components: { NodeCursorTrap, Overlays },
-	node_components: { Page, Button, Text, Story, List, ListItem },
+	node_components: { Page, Button, Text, Story, List, ListItem, Strong, Emphasis, Highlight, Link },
 	node_layouts: { text: 4, story: 3, list: 5, list_item: 1 },
 	create_commands_and_keymap: (context) => {
 		const commands = {

@@ -122,15 +122,17 @@ describe('DOM rendering — annotations', () => {
 	});
 
 	// 110
-	it('110 — annotated text element contains the annotation text content', async () => {
+	it('110 — annotated text element contains all text including annotated content', async () => {
 		const session = create_session(create_annotated_doc);
 		const { container } = await render_editor(session);
 
 		const text_el = container.querySelector('[data-path="page_1.body.0.content"]');
 		const full_text = text_el.textContent;
+		expect(full_text).toContain('Hello');
 		expect(full_text).toContain('bold');
 		expect(full_text).toContain('italic');
 		expect(full_text).toContain('linked');
+		expect(full_text).toContain('world');
 	});
 });
 

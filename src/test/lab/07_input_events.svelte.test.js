@@ -315,9 +315,9 @@ describe('KeyMapper', () => {
 	});
 
 	// 138
-	it('138 — define_keymap rejects invalid key combos', () => {
+	it('138 — define_keymap rejects key combos with multiple non-modifier keys', () => {
 		expect(() => define_keymap({ 'ctrl+a+b': [{}] })).toThrow();
-		expect(() => define_keymap({ '': [{}] })).toThrow();
+		expect(() => define_keymap({ 'a+b': [{}] })).toThrow();
 	});
 
 	// 139

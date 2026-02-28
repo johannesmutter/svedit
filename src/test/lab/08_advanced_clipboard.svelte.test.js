@@ -106,8 +106,8 @@ describe('Clipboard — annotated text copy/paste', () => {
 
 describe('Clipboard — node copy/paste at text cursor', () => {
 	// 145
-	it('145 — paste node payload at text cursor finds next insert position', async () => {
-		const session = create_session();
+	it('145 — paste multi-node payload at text cursor inserts as nodes after current node', async () => {
+		const session = create_session(create_mixed_doc);
 		const { canvas } = await render_editor(session);
 
 		set_node_selection(session, ['page_1', 'body'], 0, 1);
@@ -117,14 +117,14 @@ describe('Clipboard — node copy/paste at text cursor', () => {
 		dispatch_copy(canvas, clipboard);
 		await tick();
 
-		set_text_selection(session, 'text_2', 'content', 3, 3);
+		set_text_selection(session, 'text_1', 'content', 3, 3);
 		await tick();
 		dispatch_paste(canvas, clipboard);
 		await tick();
 		await wait(30);
 
 		const body = session.get(['page_1', 'body']);
-		expect(body.length).toBe(4);
+		expect(body.length).toBe(5);
 	});
 
 	// 146

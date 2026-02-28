@@ -335,21 +335,21 @@ export function create_mock_clipboard() {
 	};
 }
 
-export function dispatch_copy(target_el, mock_clipboard) {
+export function dispatch_copy(mock_clipboard) {
 	const event = new ClipboardEvent('copy', { bubbles: true, cancelable: true });
 	Object.defineProperty(event, 'clipboardData', { value: mock_clipboard, writable: false });
 	document.dispatchEvent(event);
 	return event;
 }
 
-export function dispatch_cut(target_el, mock_clipboard) {
+export function dispatch_cut(mock_clipboard) {
 	const event = new ClipboardEvent('cut', { bubbles: true, cancelable: true });
 	Object.defineProperty(event, 'clipboardData', { value: mock_clipboard, writable: false });
 	document.dispatchEvent(event);
 	return event;
 }
 
-export function dispatch_paste(target_el, mock_clipboard) {
+export function dispatch_paste(mock_clipboard) {
 	const event = new ClipboardEvent('paste', { bubbles: true, cancelable: true });
 	Object.defineProperty(event, 'clipboardData', { value: mock_clipboard, writable: false });
 	document.dispatchEvent(event);

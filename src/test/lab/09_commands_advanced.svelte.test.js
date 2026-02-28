@@ -19,16 +19,11 @@ import {
 	wait
 } from './helpers.js';
 
-describe('CycleLayout', () => {
+describe('Layout changes via transaction', () => {
 	// 161
-	it('161 — cycle layout next increments layout value', async () => {
+	it('161 — setting layout property changes node layout', () => {
 		const session = create_session();
-		await render_editor(session);
-
 		expect(session.get('text_1').layout).toBe(1);
-
-		set_text_selection(session, 'text_1', 'content', 3, 3);
-		await tick();
 
 		const tr = session.tr;
 		tr.set(['text_1', 'layout'], 2);
@@ -38,16 +33,20 @@ describe('CycleLayout', () => {
 	});
 
 	// 162
-	it('162 — cycle layout wraps around at max', () => {
+	it('162 — layout wraps around: max_layouts → 1', () => {
 		const session = create_session();
-		const max_layouts = session.config.node_layouts.text;
+		const max_layouts = session.config.node_layouts.text; // 4
 
 		const tr = session.tr;
 		tr.set(['text_1', 'layout'], max_layouts);
 		session.apply(tr);
+		expect(session.get('text_1').layout).toBe(max_layouts);
 
-		const next = (session.get('text_1').layout % max_layouts) + 1;
-		expect(next).toBe(1);
+		const wrapped = (session.get('text_1').layout % max_layouts) + 1;
+		const tr2 = session.tr;
+		tr2.set(['text_1', 'layout'], wrapped);
+		session.apply(tr2);
+		expect(session.get('text_1').layout).toBe(1);
 	});
 
 	// 163

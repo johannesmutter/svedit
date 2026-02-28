@@ -171,10 +171,9 @@ describe('DOM→model: cross-node selection', () => {
 		await tick();
 		await wait(20);
 
-		// Cross-node text selection should map to a node selection
-		if (session.selection) {
-			expect(['node', 'text'].includes(session.selection.type)).toBe(true);
-		}
+		// Cross-node text selection should map to a node or text selection
+		expect(session.selection).not.toBeNull();
+		expect(['node', 'text'].includes(session.selection.type)).toBe(true);
 	});
 });
 
@@ -187,22 +186,22 @@ describe('DOM→model: node cursor traps', () => {
 		await wait(20);
 
 		const trap = container.querySelector('.position-zero-cursor-trap .svedit-selectable');
-		if (trap) {
-			const sel = window.getSelection();
-			sel.removeAllRanges();
-			const range = document.createRange();
-			range.selectNodeContents(trap);
-			range.collapse(false);
-			sel.addRange(range);
-			document.dispatchEvent(new Event('selectionchange'));
-			await tick();
-			await wait(20);
+		expect(trap).not.toBeNull();
 
-			expect(session.selection).not.toBeNull();
-			expect(session.selection.type).toBe('node');
-			expect(session.selection.anchor_offset).toBe(0);
-			expect(session.selection.focus_offset).toBe(0);
-		}
+		const sel = window.getSelection();
+		sel.removeAllRanges();
+		const range = document.createRange();
+		range.selectNodeContents(trap);
+		range.collapse(false);
+		sel.addRange(range);
+		document.dispatchEvent(new Event('selectionchange'));
+		await tick();
+		await wait(20);
+
+		expect(session.selection).not.toBeNull();
+		expect(session.selection.type).toBe('node');
+		expect(session.selection.anchor_offset).toBe(0);
+		expect(session.selection.focus_offset).toBe(0);
 	});
 
 	it('clicking after-node cursor trap maps to node cursor after that node', async () => {
@@ -213,23 +212,24 @@ describe('DOM→model: node cursor traps', () => {
 		await wait(20);
 
 		const first_node = container.querySelector('[data-path="page_1.body.0"]');
-		const trap = first_node?.querySelector('.after-node-cursor-trap .svedit-selectable');
-		if (trap) {
-			const sel = window.getSelection();
-			sel.removeAllRanges();
-			const range = document.createRange();
-			range.selectNodeContents(trap);
-			range.collapse(false);
-			sel.addRange(range);
-			document.dispatchEvent(new Event('selectionchange'));
-			await tick();
-			await wait(20);
+		expect(first_node).not.toBeNull();
+		const trap = first_node.querySelector('.after-node-cursor-trap .svedit-selectable');
+		expect(trap).not.toBeNull();
 
-			expect(session.selection).not.toBeNull();
-			expect(session.selection.type).toBe('node');
-			expect(session.selection.anchor_offset).toBe(1);
-			expect(session.selection.focus_offset).toBe(1);
-		}
+		const sel = window.getSelection();
+		sel.removeAllRanges();
+		const range = document.createRange();
+		range.selectNodeContents(trap);
+		range.collapse(false);
+		sel.addRange(range);
+		document.dispatchEvent(new Event('selectionchange'));
+		await tick();
+		await wait(20);
+
+		expect(session.selection).not.toBeNull();
+		expect(session.selection.type).toBe('node');
+		expect(session.selection.anchor_offset).toBe(1);
+		expect(session.selection.focus_offset).toBe(1);
 	});
 });
 
@@ -242,24 +242,23 @@ describe('DOM→model: annotation-aware selection', () => {
 		await wait(20);
 
 		const strong_el = container.querySelector('[data-path="page_1.body.0.content"] strong');
-		if (strong_el) {
-			const text_node = find_first_text_node(strong_el);
-			if (text_node) {
-				const sel = window.getSelection();
-				sel.removeAllRanges();
-				const range = document.createRange();
-				range.setStart(text_node, 2);
-				range.setEnd(text_node, 2);
-				sel.addRange(range);
-				document.dispatchEvent(new Event('selectionchange'));
-				await tick();
-				await wait(20);
+		expect(strong_el).not.toBeNull();
+		const text_node = find_first_text_node(strong_el);
+		expect(text_node).not.toBeNull();
 
-				expect(session.selection.type).toBe('text');
-				// Cursor at offset 2 inside "bold" → global offset = 6 + 2 = 8
-				expect(session.selection.anchor_offset).toBe(8);
-			}
-		}
+		const sel = window.getSelection();
+		sel.removeAllRanges();
+		const range = document.createRange();
+		range.setStart(text_node, 2);
+		range.setEnd(text_node, 2);
+		sel.addRange(range);
+		document.dispatchEvent(new Event('selectionchange'));
+		await tick();
+		await wait(20);
+
+		expect(session.selection.type).toBe('text');
+		// Cursor at offset 2 inside "bold" → global offset = 6 + 2 = 8
+		expect(session.selection.anchor_offset).toBe(8);
 	});
 
 	it('DOM selection spanning annotation boundary maps to correct offsets', async () => {
@@ -270,27 +269,29 @@ describe('DOM→model: annotation-aware selection', () => {
 		await wait(20);
 
 		const text_el = container.querySelector('[data-path="page_1.body.0.content"]');
+		expect(text_el).not.toBeNull();
 		const first_text = find_first_text_node(text_el);
-		const strong_el = text_el?.querySelector('strong');
-		const strong_text = strong_el ? find_first_text_node(strong_el) : null;
+		expect(first_text).not.toBeNull();
+		const strong_el = text_el.querySelector('strong');
+		expect(strong_el).not.toBeNull();
+		const strong_text = find_first_text_node(strong_el);
+		expect(strong_text).not.toBeNull();
 
-		if (first_text && strong_text) {
-			const sel = window.getSelection();
-			sel.removeAllRanges();
-			const range = document.createRange();
-			range.setStart(first_text, 3);
-			range.setEnd(strong_text, 2);
-			sel.addRange(range);
-			document.dispatchEvent(new Event('selectionchange'));
-			await tick();
-			await wait(20);
+		const sel = window.getSelection();
+		sel.removeAllRanges();
+		const range = document.createRange();
+		range.setStart(first_text, 3);
+		range.setEnd(strong_text, 2);
+		sel.addRange(range);
+		document.dispatchEvent(new Event('selectionchange'));
+		await tick();
+		await wait(20);
 
-			expect(session.selection.type).toBe('text');
-			const start = Math.min(session.selection.anchor_offset, session.selection.focus_offset);
-			const end = Math.max(session.selection.anchor_offset, session.selection.focus_offset);
-			expect(start).toBe(3);
-			expect(end).toBe(8);
-		}
+		expect(session.selection.type).toBe('text');
+		const start = Math.min(session.selection.anchor_offset, session.selection.focus_offset);
+		const end = Math.max(session.selection.anchor_offset, session.selection.focus_offset);
+		expect(start).toBe(3);
+		expect(end).toBe(8);
 	});
 });
 

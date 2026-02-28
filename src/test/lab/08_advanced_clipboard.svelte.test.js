@@ -36,7 +36,7 @@ describe('Clipboard — annotated text copy/paste', () => {
 
 		const clipboard = create_mock_clipboard();
 		canvas.focus();
-		dispatch_copy(canvas, clipboard);
+		dispatch_copy(clipboard);
 		await tick();
 
 		const html = clipboard.getData('text/html');
@@ -56,7 +56,7 @@ describe('Clipboard — annotated text copy/paste', () => {
 
 		const clipboard = create_mock_clipboard();
 		canvas.focus();
-		dispatch_copy(canvas, clipboard);
+		dispatch_copy(clipboard);
 		await tick();
 
 		expect(clipboard.getData('text/plain')).toBe('o bo');
@@ -72,12 +72,12 @@ describe('Clipboard — annotated text copy/paste', () => {
 
 		const clipboard = create_mock_clipboard();
 		canvas.focus();
-		dispatch_copy(canvas, clipboard);
+		dispatch_copy(clipboard);
 		await tick();
 
 		set_text_selection(session, 'text_2', 'content', 0, 0);
 		await tick();
-		dispatch_paste(canvas, clipboard);
+		dispatch_paste(clipboard);
 		await tick();
 		await wait(30);
 
@@ -95,7 +95,7 @@ describe('Clipboard — annotated text copy/paste', () => {
 
 		const clipboard = create_mock_clipboard();
 		canvas.focus();
-		dispatch_cut(canvas, clipboard);
+		dispatch_cut(clipboard);
 		await tick();
 		await wait(20);
 
@@ -114,12 +114,12 @@ describe('Clipboard — node copy/paste at text cursor', () => {
 		await tick();
 		const clipboard = create_mock_clipboard();
 		canvas.focus();
-		dispatch_copy(canvas, clipboard);
+		dispatch_copy(clipboard);
 		await tick();
 
 		set_text_selection(session, 'text_1', 'content', 3, 3);
 		await tick();
-		dispatch_paste(canvas, clipboard);
+		dispatch_paste(clipboard);
 		await tick();
 		await wait(30);
 
@@ -136,12 +136,12 @@ describe('Clipboard — node copy/paste at text cursor', () => {
 		await tick();
 		const clipboard = create_mock_clipboard();
 		canvas.focus();
-		dispatch_copy(canvas, clipboard);
+		dispatch_copy(clipboard);
 		await tick();
 
 		set_text_selection(session, 'text_2', 'content', 7, 7);
 		await tick();
-		dispatch_paste(canvas, clipboard);
+		dispatch_paste(clipboard);
 		await tick();
 		await wait(30);
 
@@ -161,7 +161,7 @@ describe('Clipboard — property copy/paste', () => {
 
 		const clipboard = create_mock_clipboard();
 		canvas.focus();
-		dispatch_copy(canvas, clipboard);
+		dispatch_copy(clipboard);
 		await tick();
 
 		const html = clipboard.getData('text/html');
@@ -178,13 +178,13 @@ describe('Clipboard — property copy/paste', () => {
 		await tick();
 		const clipboard = create_mock_clipboard();
 		canvas.focus();
-		dispatch_copy(canvas, clipboard);
+		dispatch_copy(clipboard);
 		await tick();
 
 		const body_len = session.get(['page_1', 'body']).length;
 		set_node_selection(session, ['page_1', 'body'], body_len, body_len);
 		await tick();
-		dispatch_paste(canvas, clipboard);
+		dispatch_paste(clipboard);
 		await tick();
 		await wait(30);
 
@@ -203,7 +203,7 @@ describe('Clipboard — edge cases', () => {
 
 		const clipboard = create_mock_clipboard();
 		canvas.focus();
-		dispatch_copy(canvas, clipboard);
+		dispatch_copy(clipboard);
 		await tick();
 
 		expect(clipboard.getData('text/plain')).toBe('');
@@ -218,7 +218,7 @@ describe('Clipboard — edge cases', () => {
 		await tick();
 		const clipboard = create_mock_clipboard();
 		canvas_src.focus();
-		dispatch_copy(canvas_src, clipboard);
+		dispatch_copy(clipboard);
 		await tick();
 
 		const html_data = clipboard.getData('text/html');
@@ -235,7 +235,7 @@ describe('Clipboard — edge cases', () => {
 
 		const clipboard = create_mock_clipboard();
 		canvas.focus();
-		dispatch_copy(canvas, clipboard);
+		dispatch_copy(clipboard);
 		await tick();
 
 		const plain = clipboard.getData('text/plain');
@@ -255,7 +255,7 @@ describe('Clipboard — edge cases', () => {
 		const clipboard = create_mock_clipboard();
 		clipboard.setData('text/plain', '  APPENDED  ');
 		canvas.focus();
-		dispatch_paste(canvas, clipboard);
+		dispatch_paste(clipboard);
 		await tick();
 		await wait(30);
 
@@ -271,12 +271,12 @@ describe('Clipboard — edge cases', () => {
 		await tick();
 		const clipboard = create_mock_clipboard();
 		canvas.focus();
-		dispatch_copy(canvas, clipboard);
+		dispatch_copy(clipboard);
 		await tick();
 
 		set_node_selection(session, ['page_1', 'body'], 3, 3);
 		await tick();
-		dispatch_paste(canvas, clipboard);
+		dispatch_paste(clipboard);
 		await tick();
 		await wait(20);
 
@@ -285,7 +285,7 @@ describe('Clipboard — edge cases', () => {
 
 		set_node_selection(session, ['page_1', 'body'], 4, 4);
 		await tick();
-		dispatch_paste(canvas, clipboard);
+		dispatch_paste(clipboard);
 		await tick();
 		await wait(20);
 
@@ -308,7 +308,7 @@ describe('Clipboard — edge cases', () => {
 		const clipboard = create_mock_clipboard();
 		clipboard.setData('text/plain', 'Goodbye');
 		canvas.focus();
-		dispatch_paste(canvas, clipboard);
+		dispatch_paste(clipboard);
 		await tick();
 		await wait(20);
 
@@ -326,7 +326,7 @@ describe('Clipboard — edge cases', () => {
 		const clipboard = create_mock_clipboard();
 		clipboard.setData('text/plain', 'Para A\n\nPara B\n\nPara C');
 		canvas.focus();
-		dispatch_paste(canvas, clipboard);
+		dispatch_paste(clipboard);
 		await tick();
 		await wait(30);
 
@@ -343,7 +343,7 @@ describe('Clipboard — edge cases', () => {
 		await tick();
 		const clipboard = create_mock_clipboard();
 		canvas.focus();
-		dispatch_cut(canvas, clipboard);
+		dispatch_cut(clipboard);
 		await tick();
 		await wait(20);
 
@@ -363,12 +363,12 @@ describe('Clipboard — edge cases', () => {
 		await tick();
 		const clipboard = create_mock_clipboard();
 		canvas.focus();
-		dispatch_copy(canvas, clipboard);
+		dispatch_copy(clipboard);
 		await tick();
 
 		set_node_selection(session, ['page_1', 'body'], 4, 4);
 		await tick();
-		dispatch_paste(canvas, clipboard);
+		dispatch_paste(clipboard);
 		await tick();
 		await wait(30);
 
@@ -388,12 +388,12 @@ describe('Clipboard — edge cases', () => {
 		await tick();
 		const clipboard = create_mock_clipboard();
 		canvas.focus();
-		dispatch_copy(canvas, clipboard);
+		dispatch_copy(clipboard);
 		await tick();
 
 		set_node_selection(session, ['page_1', 'body'], 4, 4);
 		await tick();
-		dispatch_paste(canvas, clipboard);
+		dispatch_paste(clipboard);
 		await tick();
 		await wait(30);
 
@@ -415,12 +415,12 @@ describe('Clipboard — edge cases', () => {
 		await tick();
 		const clipboard = create_mock_clipboard();
 		canvas.focus();
-		dispatch_copy(canvas, clipboard);
+		dispatch_copy(clipboard);
 		await tick();
 
 		set_node_selection(session, ['page_1', 'body'], 0, 2);
 		await tick();
-		dispatch_paste(canvas, clipboard);
+		dispatch_paste(clipboard);
 		await tick();
 		await wait(30);
 

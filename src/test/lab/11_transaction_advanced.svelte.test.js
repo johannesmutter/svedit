@@ -61,17 +61,18 @@ describe('Transaction.insert_text with annotations', () => {
 		const session = create_session(create_annotated_doc);
 		set_text_selection(session, 'text_1', 'content', 8, 8);
 
+		const anno_count_before = session.get('text_1').content.annotations.length;
 		const annotations = [{ start_offset: 0, end_offset: 2, node_id: 'test_em' }];
 		const nodes = { test_em: { id: 'test_em', type: 'emphasis' } };
 
 		session.apply(session.tr.insert_text('XX', annotations, nodes));
 
 		const content = session.get('text_1').content;
-		const emphasis_annos = content.annotations.filter(
-			(a) => session.get(a.node_id)?.type === 'emphasis'
-		);
-		expect(emphasis_annos.length).toBe(1);
-		expect(emphasis_annos[0].node_id).toBe('emphasis_1');
+		expect(content.text).toContain('XX');
+		// No new annotation should have been added
+		expect(content.annotations.length).toBe(anno_count_before);
+		// The test_em node should NOT exist (was not built)
+		expect(session.get('test_em')).toBeUndefined();
 	});
 
 	it('insert_text with annotation of incompatible type is filtered out', () => {

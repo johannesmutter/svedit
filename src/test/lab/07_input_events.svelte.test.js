@@ -120,31 +120,39 @@ describe('beforeinput — deletion', () => {
 	});
 
 	// 126
-	it('126 — deleteWordBackward removes previous character (same as backward)', async () => {
+	it('126 — deleteWordBackward is handled (currently single-char, see #14)', async () => {
 		const session = create_session();
 		const { canvas } = await render_editor(session);
 		set_text_selection(session, 'text_1', 'content', 5, 5);
 		await tick();
 		await wait(10);
 
-		canvas.dispatchEvent(create_input_event('deleteWordBackward'));
+		const event = create_input_event('deleteWordBackward');
+		canvas.dispatchEvent(event);
 		await tick();
 
+		expect(event.defaultPrevented).toBe(true);
+		// Currently deletes 1 char (bug #14), not a full word
 		expect(session.get('text_1').content.text).toBe('Hell world');
+		expect(session.selection.anchor_offset).toBe(4);
 	});
 
 	// 127
-	it('127 — deleteWordForward removes next character (same as forward)', async () => {
+	it('127 — deleteWordForward is handled (currently single-char, see #14)', async () => {
 		const session = create_session();
 		const { canvas } = await render_editor(session);
 		set_text_selection(session, 'text_1', 'content', 5, 5);
 		await tick();
 		await wait(10);
 
-		canvas.dispatchEvent(create_input_event('deleteWordForward'));
+		const event = create_input_event('deleteWordForward');
+		canvas.dispatchEvent(event);
 		await tick();
 
+		expect(event.defaultPrevented).toBe(true);
+		// Currently deletes 1 char (bug #14), not a full word
 		expect(session.get('text_1').content.text).toBe('Helloworld');
+		expect(session.selection.anchor_offset).toBe(5);
 	});
 });
 

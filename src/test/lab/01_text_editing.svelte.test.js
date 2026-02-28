@@ -260,15 +260,15 @@ describe('Text editing basics', () => {
 	// -----------------------------------------------------------------------
 	// 19. Delete backward at pos 0 with no previous node does nothing
 	// -----------------------------------------------------------------------
-	it('19 — delete backward at pos 0 of first text node returns false', () => {
+	it('19 — delete backward at pos 0 of first text node is a no-op', () => {
 		const session = create_session();
 		set_text_selection(session, 'text_1', 'content', 0, 0);
 
-		const tr = session.tr;
-		tr.delete_selection('backward');
-		session.apply(tr);
+		session.apply(session.tr.delete_selection('backward'));
 
 		expect(session.get('text_1').content.text).toBe('Hello world');
+		expect(session.get(['page_1', 'body']).length).toBe(3);
+		expect(session.selection.anchor_offset).toBe(0);
 	});
 
 	// -----------------------------------------------------------------------

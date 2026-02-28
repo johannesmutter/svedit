@@ -303,7 +303,7 @@ describe('Node operations', () => {
 
 		const clipboard = create_mock_clipboard();
 		canvas?.focus();
-		dispatch_copy(canvas, clipboard);
+		dispatch_copy(clipboard);
 		await tick();
 
 		const html = clipboard.getData('text/html');
@@ -324,7 +324,7 @@ describe('Node operations', () => {
 
 		const clipboard = create_mock_clipboard();
 		canvas?.focus();
-		dispatch_cut(canvas, clipboard);
+		dispatch_cut(clipboard);
 		await tick();
 		await wait(20);
 
@@ -343,12 +343,12 @@ describe('Node operations', () => {
 		await tick();
 		const clipboard = create_mock_clipboard();
 		canvas?.focus();
-		dispatch_copy(canvas, clipboard);
+		dispatch_copy(clipboard);
 		await tick();
 
 		set_node_selection(session, ['page_1', 'body'], 3, 3);
 		await tick();
-		dispatch_paste(canvas, clipboard);
+		dispatch_paste(clipboard);
 		await tick();
 		await wait(20);
 
@@ -371,12 +371,12 @@ describe('Node operations', () => {
 		await tick();
 		const clipboard = create_mock_clipboard();
 		canvas?.focus();
-		dispatch_copy(canvas, clipboard);
+		dispatch_copy(clipboard);
 		await tick();
 
 		set_node_selection(session, ['page_1', 'body'], 0, 1);
 		await tick();
-		dispatch_paste(canvas, clipboard);
+		dispatch_paste(clipboard);
 		await tick();
 		await wait(20);
 

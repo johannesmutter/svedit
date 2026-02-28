@@ -366,7 +366,7 @@ describe('Edge cases', () => {
 
 		const clipboard = create_mock_clipboard();
 		canvas?.focus();
-		dispatch_copy(canvas, clipboard);
+		dispatch_copy(clipboard);
 		await tick();
 
 		const text = clipboard.getData('text/plain');
@@ -388,7 +388,7 @@ describe('Edge cases', () => {
 		const clipboard = create_mock_clipboard();
 		clipboard.setData('text/plain', 'beautiful ');
 		canvas?.focus();
-		dispatch_paste(canvas, clipboard);
+		dispatch_paste(clipboard);
 		await tick();
 		await wait(20);
 
@@ -407,7 +407,7 @@ describe('Edge cases', () => {
 		const clipboard = create_mock_clipboard();
 		clipboard.setData('text/plain', 'First para\n\nSecond para');
 		canvas?.focus();
-		dispatch_paste(canvas, clipboard);
+		dispatch_paste(clipboard);
 		await tick();
 		await wait(20);
 

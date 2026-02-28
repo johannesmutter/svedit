@@ -100,7 +100,7 @@ describe('GitHub #199 — Cut image property', () => {
 
 		const clipboard = create_mock_clipboard();
 		canvas.focus();
-		dispatch_cut(canvas, clipboard);
+		dispatch_cut(clipboard);
 		await tick();
 		await wait(20);
 
@@ -154,7 +154,7 @@ describe('GitHub #136 — HTML export should include annotation markup', () => {
 
 		const clipboard = create_mock_clipboard();
 		canvas.focus();
-		dispatch_copy(canvas, clipboard);
+		dispatch_copy(clipboard);
 		await tick();
 
 		const html = clipboard.getData('text/html');
@@ -183,14 +183,14 @@ describe('GitHub #138 — Paste block node auto-wrap', () => {
 
 		const clipboard = create_mock_clipboard();
 		canvas.focus();
-		dispatch_copy(canvas, clipboard);
+		dispatch_copy(clipboard);
 		await tick();
 
 		// Paste at body level — button is not in body's node_types
 		const body_before = session.get(['page_1', 'body']).length;
 		set_node_selection(session, ['page_1', 'body'], 4, 4);
 		await tick();
-		dispatch_paste(canvas, clipboard);
+		dispatch_paste(clipboard);
 		await tick();
 		await wait(30);
 
@@ -265,7 +265,7 @@ describe('GitHub #6 — Double-click on last text node overflows', () => {
 
 		// Find the last text node's element
 		const text_el = container.querySelector('[data-type="text"][data-path="page_1.body.2.content"]');
-		if (!text_el) return; // skip if not rendered
+		expect(text_el).not.toBeNull();
 
 		// Simulate what happens on double-click of last line:
 		// The browser sets selection from start of text to the container element itself

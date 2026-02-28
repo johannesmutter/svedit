@@ -72,17 +72,17 @@ describe('validate_node — error paths', () => {
 });
 
 describe('validate_document_schema', () => {
-	it('schema with missing referenced type throws', () => {
-		expect(() => {
-			define_document_schema({
-				page: {
-					kind: 'document',
-					properties: {
-						body: { type: 'node_array', node_types: ['missing_type'], default_node_type: 'missing_type' }
-					}
+	it('define_document_schema is an identity passthrough (no validation at define time)', () => {
+		const schema = define_document_schema({
+			page: {
+				kind: 'document',
+				properties: {
+					body: { type: 'node_array', node_types: ['missing_type'], default_node_type: 'missing_type' }
 				}
-			});
-		}).not.toThrow();
+			}
+		});
+		expect(schema.page).toBeDefined();
+		expect(schema.page.properties.body.node_types).toEqual(['missing_type']);
 	});
 });
 

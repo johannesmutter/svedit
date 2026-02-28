@@ -218,11 +218,11 @@ describe('GitHub #199 — Cut of image property', () => {
 // list_items in a list node.
 // =========================================================================
 describe('GitHub #138 — Paste incompatible node types', () => {
-	it('#138 — pasting list_item at body level is rejected (no auto-wrap)', async () => {
+	it('#138 — pasting text-kind list_item at body level auto-converts to text node', async () => {
 		const session = create_session(create_mixed_doc);
 		const { canvas } = await render_editor(session);
 
-		// Copy a list item
+		// Copy a list item (kind: 'text')
 		session.selection = {
 			type: 'node',
 			path: ['page_1', 'body', 2, 'list_items'],
@@ -236,18 +236,51 @@ describe('GitHub #138 — Paste incompatible node types', () => {
 		dispatch_copy(canvas, clipboard);
 		await tick();
 
-		// Try to paste at body level
+		// Paste at body level — list_item is kind 'text' so it gets auto-converted
 		set_node_selection(session, ['page_1', 'body'], 4, 4);
 		await tick();
 		dispatch_paste(canvas, clipboard);
 		await tick();
 		await wait(30);
 
-		// BUG: paste is rejected because list_item is not in body's node_types
-		// Current: body length stays at 4
-		// Correct: would auto-wrap in a list, making body length 5
 		const body = session.get(['page_1', 'body']);
-		expect(body.length).toBe(4); // documents the current behavior (rejected paste)
+		expect(body.length).toBe(5);
+
+		// The pasted node was converted from list_item to text
+		const pasted = session.get(body[4]);
+		expect(pasted.type).toBe('text');
+		expect(pasted.content.text).toBe('Item one');
+	});
+
+	it('#138 — pasting block-kind node at incompatible position has no auto-wrap (missing feature)', async () => {
+		const session = create_session(create_mixed_doc);
+		const { canvas } = await render_editor(session);
+
+		// Copy a button (kind: 'block', only allowed in story.buttons)
+		session.selection = {
+			type: 'node',
+			path: ['page_1', 'body', 0, 'buttons'],
+			anchor_offset: 0,
+			focus_offset: 1
+		};
+		await tick();
+
+		const clipboard = create_mock_clipboard();
+		canvas.focus();
+		dispatch_copy(canvas, clipboard);
+		await tick();
+
+		// Try to paste at body level — button is not in body's node_types and is not text-kind
+		const body_before = session.get(['page_1', 'body']).length;
+		set_node_selection(session, ['page_1', 'body'], 4, 4);
+		await tick();
+		dispatch_paste(canvas, clipboard);
+		await tick();
+		await wait(30);
+
+		// Paste is rejected — no auto-wrapping
+		const body_after = session.get(['page_1', 'body']);
+		expect(body_after.length).toBe(body_before); // documents the rejected paste
 	});
 });
 

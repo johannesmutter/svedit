@@ -236,19 +236,20 @@ describe('Text formatting & annotations', () => {
 	// -----------------------------------------------------------------------
 	it('36 — cannot add a different annotation type when one already exists (exclusive annotations)', () => {
 		const session = create_session(create_annotated_doc);
+		const annotations_before = session.get('text_1').content.annotations.length;
 		set_text_selection(session, 'text_1', 'content', 6, 10);
 
 		session.apply(session.tr.annotate_text('emphasis'));
 
 		const content = session.get('text_1').content;
+		expect(content.annotations.length).toBe(annotations_before);
+
 		const strong = content.annotations.filter(
 			(a) => session.get(a.node_id)?.type === 'strong'
 		);
-		const emphasis = content.annotations.filter(
-			(a) => session.get(a.node_id)?.type === 'emphasis'
-		);
 		expect(strong.length).toBe(1);
-		expect(emphasis.length).toBe(0);
+		expect(strong[0].start_offset).toBe(6);
+		expect(strong[0].end_offset).toBe(10);
 	});
 
 	// -----------------------------------------------------------------------

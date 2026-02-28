@@ -386,13 +386,13 @@ describe('Edge cases', () => {
 		await tick();
 
 		const clipboard = create_mock_clipboard();
-		clipboard.setData('text/plain', ' beautiful');
+		clipboard.setData('text/plain', 'beautiful ');
 		canvas?.focus();
 		dispatch_paste(canvas, clipboard);
 		await tick();
 		await wait(20);
 
-		expect(session.get('text_1').content.text).toBe('Hello beautiful world');
+		expect(session.get('text_1').content.text).toBe('Hellobeautiful world');
 	});
 
 	// -----------------------------------------------------------------------

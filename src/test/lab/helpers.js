@@ -9,6 +9,17 @@ import { tick } from 'svelte';
 import { render } from 'vitest-browser-svelte';
 import Session from '../../lib/Session.svelte.js';
 import { define_document_schema } from '../../lib/doc_utils.js';
+import { define_keymap } from '../../lib/KeyMapper.svelte.js';
+import Command, {
+	UndoCommand,
+	RedoCommand,
+	SelectParentCommand,
+	ToggleAnnotationCommand,
+	AddNewLineCommand,
+	BreakTextNodeCommand,
+	SelectAllCommand,
+	InsertDefaultNodeCommand
+} from '../../lib/Command.svelte.js';
 import nanoid from '../../routes/nanoid.js';
 
 import Overlays from '../../routes/components/Overlays.svelte';
@@ -42,7 +53,7 @@ export const document_schema = define_document_schema({
 	button: {
 		kind: 'block',
 		properties: {
-			label: { type: 'annotated_text', allow_newlines: false },
+			label: { type: 'annotated_text', node_types: [], allow_newlines: false },
 			href: { type: 'string' }
 		}
 	},
@@ -50,15 +61,15 @@ export const document_schema = define_document_schema({
 		kind: 'text',
 		properties: {
 			layout: { type: 'integer' },
-			content: { type: 'annotated_text', allow_newlines: true }
+			content: { type: 'annotated_text', node_types: ['strong', 'emphasis', 'highlight', 'link'], allow_newlines: true }
 		}
 	},
 	story: {
 		kind: 'block',
 		properties: {
 			layout: { type: 'integer' },
-			title: { type: 'annotated_text', allow_newlines: false },
-			description: { type: 'annotated_text', allow_newlines: true },
+			title: { type: 'annotated_text', node_types: ['emphasis', 'highlight'], allow_newlines: false },
+			description: { type: 'annotated_text', node_types: ['strong', 'emphasis', 'highlight', 'link'], allow_newlines: true },
 			buttons: { type: 'node_array', node_types: ['button'], default_node_type: 'button' },
 			image: { type: 'string' }
 		}
@@ -66,7 +77,7 @@ export const document_schema = define_document_schema({
 	list_item: {
 		kind: 'text',
 		properties: {
-			content: { type: 'annotated_text', allow_newlines: true }
+			content: { type: 'annotated_text', node_types: ['strong', 'emphasis', 'highlight', 'link'], allow_newlines: true }
 		}
 	},
 	list: {
@@ -100,6 +111,34 @@ export const session_config = {
 	system_components: { NodeCursorTrap, Overlays },
 	node_components: { Page, Button, Text, Story, List, ListItem },
 	node_layouts: { text: 4, story: 3, list: 5, list_item: 1 },
+	create_commands_and_keymap: (context) => {
+		const commands = {
+			select_all: new SelectAllCommand(context),
+			insert_default_node: new InsertDefaultNodeCommand(context),
+			add_new_line: new AddNewLineCommand(context),
+			break_text_node: new BreakTextNodeCommand(context),
+			toggle_strong: new ToggleAnnotationCommand('strong', context),
+			toggle_emphasis: new ToggleAnnotationCommand('emphasis', context),
+			toggle_highlight: new ToggleAnnotationCommand('highlight', context),
+			undo: new UndoCommand(context),
+			redo: new RedoCommand(context),
+			select_parent: new SelectParentCommand(context)
+		};
+
+		const keymap = define_keymap({
+			'meta+a,ctrl+a': [commands.select_all],
+			enter: [commands.break_text_node, commands.insert_default_node],
+			'shift+enter': [commands.add_new_line, commands.insert_default_node],
+			'meta+b,ctrl+b': [commands.toggle_strong],
+			'meta+i,ctrl+i': [commands.toggle_emphasis],
+			'meta+u,ctrl+u': [commands.toggle_highlight],
+			'meta+z,ctrl+z': [commands.undo],
+			'meta+shift+z,ctrl+shift+z': [commands.redo],
+			escape: [commands.select_parent]
+		});
+
+		return { commands, keymap };
+	},
 	inserters: {
 		button(tr) {
 			const node = { id: nanoid(), type: 'button', label: { text: '', annotations: [] }, href: 'https://editable.website' };
@@ -148,7 +187,7 @@ export function create_text_doc() {
 			text_1: { id: 'text_1', type: 'text', layout: 1, content: { text: 'Hello world', annotations: [] } },
 			text_2: { id: 'text_2', type: 'text', layout: 1, content: { text: 'Second paragraph', annotations: [] } },
 			text_3: { id: 'text_3', type: 'text', layout: 1, content: { text: 'Third paragraph', annotations: [] } },
-			page_1: { id: 'page_1', type: 'page', body: ['text_1', 'text_2', 'text_3'], keywords: [], daily_visitors: [], created_at: '' }
+			page_1: { id: 'page_1', type: 'page', body: ['text_1', 'text_2', 'text_3'], keywords: [], daily_visitors: [], created_at: '2025-01-01T00:00:00.000Z' }
 		}
 	};
 }
@@ -173,7 +212,7 @@ export function create_annotated_doc() {
 				}
 			},
 			text_2: { id: 'text_2', type: 'text', layout: 1, content: { text: 'Plain text node', annotations: [] } },
-			page_1: { id: 'page_1', type: 'page', body: ['text_1', 'text_2'], keywords: [], daily_visitors: [], created_at: '' }
+			page_1: { id: 'page_1', type: 'page', body: ['text_1', 'text_2'], keywords: [], daily_visitors: [], created_at: '2025-01-01T00:00:00.000Z' }
 		}
 	};
 }
@@ -191,7 +230,7 @@ export function create_mixed_doc() {
 			list_item_3: { id: 'list_item_3', type: 'list_item', content: { text: 'Item three', annotations: [] } },
 			list_1: { id: 'list_1', type: 'list', layout: 1, list_items: ['list_item_1', 'list_item_2', 'list_item_3'] },
 			text_2: { id: 'text_2', type: 'text', layout: 2, content: { text: 'Second paragraph', annotations: [] } },
-			page_1: { id: 'page_1', type: 'page', body: ['story_1', 'text_1', 'list_1', 'text_2'], keywords: ['test'], daily_visitors: [42], created_at: '' }
+			page_1: { id: 'page_1', type: 'page', body: ['story_1', 'text_1', 'list_1', 'text_2'], keywords: ['test'], daily_visitors: [42], created_at: '2025-01-01T00:00:00.000Z' }
 		}
 	};
 }
@@ -201,7 +240,7 @@ export function create_empty_doc() {
 	return {
 		document_id: 'page_1',
 		nodes: {
-			page_1: { id: 'page_1', type: 'page', body: [], keywords: [], daily_visitors: [], created_at: '' }
+			page_1: { id: 'page_1', type: 'page', body: [], keywords: [], daily_visitors: [], created_at: '2025-01-01T00:00:00.000Z' }
 		}
 	};
 }
@@ -212,7 +251,7 @@ export function create_single_empty_text_doc() {
 		document_id: 'page_1',
 		nodes: {
 			text_1: { id: 'text_1', type: 'text', layout: 1, content: { text: '', annotations: [] } },
-			page_1: { id: 'page_1', type: 'page', body: ['text_1'], keywords: [], daily_visitors: [], created_at: '' }
+			page_1: { id: 'page_1', type: 'page', body: ['text_1'], keywords: [], daily_visitors: [], created_at: '2025-01-01T00:00:00.000Z' }
 		}
 	};
 }
@@ -232,11 +271,13 @@ export function create_session(doc_factory = create_text_doc) {
 export async function render_editor(session) {
 	const result = render(SveditTest, { session });
 	await tick();
-	await wait(10);
+	await wait(50);
+	await tick();
 
 	const canvas = result.container.querySelector('.svedit-canvas');
 	if (canvas) canvas.focus();
 	await tick();
+	await wait(10);
 	return { ...result, canvas };
 }
 

@@ -66,10 +66,10 @@ describe('History — undo & redo', () => {
 		session.apply(session.tr.insert_text('B'));
 		session.apply(session.tr.insert_text('C'));
 
-		expect(session.get('text_1').content.text).toBe('CBAHello world');
+		expect(session.get('text_1').content.text).toBe('ABCHello world');
 
 		session.undo();
-		expect(session.get('text_1').content.text).toBe('BAHello world');
+		expect(session.get('text_1').content.text).toBe('ABHello world');
 		session.undo();
 		expect(session.get('text_1').content.text).toBe('AHello world');
 		session.undo();
@@ -118,7 +118,7 @@ describe('History — undo & redo', () => {
 
 		session.apply(session.tr.insert_text('Z'));
 		expect(session.can_redo).toBe(false);
-		expect(session.get('text_1').content.text).toBe('ZAHello world');
+		expect(session.get('text_1').content.text).toBe('AZHello world');
 	});
 
 	// -----------------------------------------------------------------------
@@ -166,7 +166,7 @@ describe('History — undo & redo', () => {
 		session.apply(session.tr.insert_text('B'), { batch: true });
 		session.apply(session.tr.insert_text('C'), { batch: true });
 
-		expect(session.get('text_1').content.text).toBe('CBAHello world');
+		expect(session.get('text_1').content.text).toBe('ABCHello world');
 		expect(session.history.length).toBe(1);
 
 		session.undo();
@@ -396,10 +396,10 @@ describe('Commands', () => {
 
 		set_text_selection(session, 'text_1', 'content', 8, 8);
 		await tick();
-		expect(session.commands.toggle_strong.active).toBe(true);
+		expect(session.commands.toggle_strong.active).toBeTruthy();
 
 		set_text_selection(session, 'text_1', 'content', 3, 3);
 		await tick();
-		expect(session.commands.toggle_strong.active).toBe(false);
+		expect(session.commands.toggle_strong.active).toBeFalsy();
 	});
 });

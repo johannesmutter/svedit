@@ -9,7 +9,7 @@ import { tick } from 'svelte';
 import { render } from 'vitest-browser-svelte';
 import Session from '../../lib/Session.svelte.js';
 import { define_document_schema } from '../../lib/doc_utils.js';
-import { define_keymap } from '../../lib/KeyMapper.svelte.js';
+import { define_keymap, KeyMapper } from '../../lib/KeyMapper.svelte.js';
 import Command, {
 	UndoCommand,
 	RedoCommand,
@@ -360,4 +360,43 @@ export function wait(ms = 10) {
 	return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-export { tick, nanoid };
+/** Document with multiple annotated text nodes for split/join tests. */
+export function create_multi_annotated_doc() {
+	return {
+		document_id: 'page_1',
+		nodes: {
+			strong_1: { id: 'strong_1', type: 'strong' },
+			emphasis_1: { id: 'emphasis_1', type: 'emphasis' },
+			text_1: {
+				id: 'text_1', type: 'text', layout: 1,
+				content: {
+					text: 'AB bold CD',
+					annotations: [{ start_offset: 3, end_offset: 7, node_id: 'strong_1' }]
+				}
+			},
+			text_2: {
+				id: 'text_2', type: 'text', layout: 1,
+				content: {
+					text: 'EF italic GH',
+					annotations: [{ start_offset: 3, end_offset: 9, node_id: 'emphasis_1' }]
+				}
+			},
+			text_3: { id: 'text_3', type: 'text', layout: 1, content: { text: 'Plain text', annotations: [] } },
+			page_1: { id: 'page_1', type: 'page', body: ['text_1', 'text_2', 'text_3'], keywords: [], daily_visitors: [], created_at: '2025-01-01T00:00:00.000Z' }
+		}
+	};
+}
+
+/** Document with a shared/duplicate node reference. */
+export function create_shared_ref_doc() {
+	return {
+		document_id: 'page_1',
+		nodes: {
+			text_shared: { id: 'text_shared', type: 'text', layout: 1, content: { text: 'Shared', annotations: [] } },
+			text_unique: { id: 'text_unique', type: 'text', layout: 1, content: { text: 'Unique', annotations: [] } },
+			page_1: { id: 'page_1', type: 'page', body: ['text_shared', 'text_unique', 'text_shared'], keywords: [], daily_visitors: [], created_at: '2025-01-01T00:00:00.000Z' }
+		}
+	};
+}
+
+export { tick, nanoid, KeyMapper, define_keymap, Command };

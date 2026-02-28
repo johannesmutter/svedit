@@ -9,6 +9,7 @@ import { describe, it, expect } from 'vitest';
 import {
 	create_session,
 	create_text_doc,
+	create_annotated_doc,
 	create_mixed_doc,
 	create_empty_doc,
 	set_text_selection,

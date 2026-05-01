@@ -161,7 +161,7 @@
 
 	/* A virtual caret: to fix the caret vertical alignment issue in Chrome and Firefox for empty focused contenteditable with placeholders */
 	.empty  {
-		caret-color: transparent;
+		caret-color: red !important;
 	}
 	[placeholder].editable.empty.focused::before {
     content: "";

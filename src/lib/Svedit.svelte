@@ -11,6 +11,7 @@
 	import { create_node_visibility } from './node_visibility.svelte.js';
 	import DefaultNodeSelectionMarkers from './NodeSelectionMarkers.svelte';
 	import './styles/svedit-colors.css';
+	import './styles/svedit-animations.css';
 
 	/** @import {
 	 *   SveditProps,
@@ -1370,7 +1371,7 @@ ${fallback_html}`;
 
 <style>
 	.svedit-canvas {
-		caret-color: var(--svedit-editing-stroke);
+		caret-color: var(--svedit-caret-color);
 		caret-shape: bar;
 		/* Default to vertical/ column flow with: --row: 0; (the most common case)
 		Prevents silent failures when developers forget to set the row property in their top level node component.

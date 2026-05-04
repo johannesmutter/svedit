@@ -228,10 +228,13 @@
 					}
 				} else if (mode === 'classlist_extra') {
 					const node_els = document.querySelectorAll('[data-type="node"]');
-					const visible_start = Math.floor(p * node_els.length);
-					for (let i = 0; i < Math.min(10, node_els.length); i++) {
-						const idx = (visible_start + i) % node_els.length;
-						node_els[idx].classList.toggle('extra-marker', true);
+					const len = node_els.length;
+					if (len > 0) {
+						const visible_start = Math.floor(p * (len - 1));
+						for (let i = 0; i < Math.min(10, len); i++) {
+							const el = node_els[(visible_start + i) % len];
+							if (el) el.classList.toggle('extra-marker', true);
+						}
 					}
 				}
 

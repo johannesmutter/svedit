@@ -46,6 +46,7 @@
 
 import { SvelteMap, SvelteSet } from 'svelte/reactivity';
 import { untrack } from 'svelte';
+import { PATH_SEPARATOR } from './utils.js';
 
 const NODE_SELECTOR = '[data-type="node"][data-path]';
 const GAP_SELECTOR = '.node-gap[data-gap-array-path]';
@@ -273,11 +274,11 @@ class VisibilityRegistry {
 	 * @returns {{ array_path: string, index: number } | null}
 	 */
 	#split_path(path) {
-		const dot = path.lastIndexOf('.');
-		if (dot < 0) return null;
-		const index = parseInt(path.slice(dot + 1), 10);
+		const sep = path.lastIndexOf(PATH_SEPARATOR);
+		if (sep < 0) return null;
+		const index = parseInt(path.slice(sep + PATH_SEPARATOR.length), 10);
 		if (Number.isNaN(index)) return null;
-		return { array_path: path.slice(0, dot), index };
+		return { array_path: path.slice(0, sep), index };
 	}
 
 	/**
@@ -456,22 +457,22 @@ function should_position_gap_imperative(registry, array_path_str, offset, is_las
 	if (!registry) return false;
 
 	if (empty) {
-		return registry.near_map.has(`${array_path_str}.0`);
+		return registry.near_map.has(`${array_path_str}${PATH_SEPARATOR}0`);
 	}
 
 	if (offset === 0) {
-		if (!registry.near_map.has(`${array_path_str}.0`)) return false;
-		return ((registry.clip_map.get(`${array_path_str}.0`) ?? 0) & 0b01) === 0;
+		if (!registry.near_map.has(`${array_path_str}${PATH_SEPARATOR}0`)) return false;
+		return ((registry.clip_map.get(`${array_path_str}${PATH_SEPARATOR}0`) ?? 0) & 0b01) === 0;
 	}
 
 	if (is_last) {
 		const last = offset - 1;
-		if (!registry.near_map.has(`${array_path_str}.${last}`)) return false;
-		return ((registry.clip_map.get(`${array_path_str}.${last}`) ?? 0) & 0b10) === 0;
+		if (!registry.near_map.has(`${array_path_str}${PATH_SEPARATOR}${last}`)) return false;
+		return ((registry.clip_map.get(`${array_path_str}${PATH_SEPARATOR}${last}`) ?? 0) & 0b10) === 0;
 	}
 
 	return (
-		registry.near_map.has(`${array_path_str}.${offset - 1}`) &&
-		registry.near_map.has(`${array_path_str}.${offset}`)
+		registry.near_map.has(`${array_path_str}${PATH_SEPARATOR}${offset - 1}`) &&
+		registry.near_map.has(`${array_path_str}${PATH_SEPARATOR}${offset}`)
 	);
 }
